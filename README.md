@@ -1,39 +1,47 @@
-import subprocess
-
-def get_wifi_password():
+def calculator():
     """
-    Function to retrieve the password of the currently connected WiFi network.
+    Function to perform basic arithmetic calculations based on user input.
+
+    This function prompts the user to enter two numbers and an operator (+, -, *, /).
+    It then performs the corresponding arithmetic operation and returns the result.
 
     Returns:
-    - str:
-        The password of the currently connected WiFi network.
+    - float:
+        The result of the arithmetic operation.
 
     Raises:
-    - OSError:
-        If the command to retrieve the WiFi password fails.
+    - ValueError:
+        If the user enters an invalid operator or if the second number is zero when performing division.
     """
 
-    try:
-        # Run the command to retrieve the WiFi password
-        output = subprocess.check_output(["netsh", "wlan", "show", "profile"]).decode("utf-8")
+    # Prompting the user to enter the first number
+    num1 = float(input("Enter the first number: "))
 
-        # Find the name of the currently connected WiFi network
-        connected_network = [line.split(":")[1].strip() for line in output.splitlines() if "All User Profile" in line][0]
+    # Prompting the user to enter the operator
+    operator = input("Enter the operator (+, -, *, /): ")
 
-        # Run the command to retrieve the password of the currently connected WiFi network
-        password_output = subprocess.check_output(["netsh", "wlan", "show", "profile", "name=" + connected_network, "key=clear"]).decode("utf-8")
+    # Prompting the user to enter the second number
+    num2 = float(input("Enter the second number: "))
 
-        # Find the password in the output
-        password = [line.split(":")[1].strip() for line in password_output.splitlines() if "Key Content" in line][0]
+    # Performing the arithmetic operation based on the operator
+    if operator == "+":
+        result = num1 + num2
+    elif operator == "-":
+        result = num1 - num2
+    elif operator == "*":
+        result = num1 * num2
+    elif operator == "/":
+        if num2 == 0:
+            raise ValueError("Cannot divide by zero.")
+        result = num1 / num2
+    else:
+        raise ValueError("Invalid operator.")
 
-        return password
+    return result
 
-    except subprocess.CalledProcessError as e:
-        raise OSError("Failed to retrieve WiFi password.") from e
-
-# Example usage:
+# Example usage of the calculator function
 try:
-    wifi_password = get_wifi_password()
-    print(f"The password of the currently connected WiFi network is: {wifi_password}")
-except OSError as e:
-    print(f"Error: {e}")
+    result = calculator()
+    print("Result:", result)
+except ValueError as e:
+    print("Error:", e)
